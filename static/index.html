@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BAC Organizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --cream:#FFF8F0;--paper:#FFFCF8;--card:#FFFFFF;
+  --orange:#FF6B35;--orange-light:#FF8C55;--orange-pale:#FFF0E8;--orange-deep:#E55A26;
+  --amber:#F7931E;--gold:#FFB347;
+  --text:#2C1810;--text-mid:#6B4C3B;--text-light:#A07860;
+  --border:#F0E0D0;--shadow:rgba(255,107,53,0.12);
+  --success:#4CAF7D;--danger:#E55353;
+  --sidebar-w:260px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text)}
+html[lang="ar"] body,html[lang="ar"] input,html[lang="ar"] button,html[lang="ar"] textarea{font-family:'Noto Sans Arabic','DM Sans',sans-serif}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--paper);border-right:2px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;position:relative;transition:width .25s ease,border .25s ease}
+html[dir="rtl"] .sidebar{border-right:none;border-left:2px solid var(--border)}
+.sidebar.collapsed{width:0;border-color:transparent}
+.sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--orange),var(--amber),var(--gold));z-index:1}
+.sidebar-inner{width:var(--sidebar-w);display:flex;flex-direction:column;flex:1}
+.sidebar-logo{padding:28px 20px 20px;border-bottom:2px dashed var(--border)}
+.logo-badge{display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:#fff;padding:6px 12px;border-radius:6px;font-family:'Fraunces',serif;font-weight:700;font-size:18px;box-shadow:3px 3px 0 var(--orange-deep);margin-bottom:6px}
+.logo-sub{font-size:11px;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase}
+.lang-toggle{display:flex;gap:4px;margin-top:10px}
+.lang-btn{flex:1;padding:5px 8px;border:2px solid var(--border);border-radius:6px;background:var(--cream);color:var(--text-mid);font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit}
+.lang-btn.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+.sidebar-nav{padding:12px 0;flex:1}
+.nav-section{padding:8px 16px 4px;font-size:10px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:0.1em;white-space:nowrap}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13.5px;font-weight:500;color:var(--text-mid);border-left:3px solid transparent;transition:all .15s;white-space:nowrap}
+html[dir="rtl"] .nav-item{border-left:none;border-right:3px solid transparent}
+.nav-item:hover{background:var(--orange-pale);color:var(--orange)}
+.nav-item.active{background:var(--orange-pale);color:var(--orange);border-left-color:var(--orange);font-weight:600}
+html[dir="rtl"] .nav-item.active{border-left-color:transparent;border-right-color:var(--orange)}
+.nav-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:2px solid currentColor}
+.nav-dot.filled{background:currentColor}
+.nav-score{margin-left:auto;font-size:11px;font-weight:700;background:var(--orange-pale);color:var(--orange);padding:2px 7px;border-radius:20px}
+html[dir="rtl"] .nav-score{margin-left:0;margin-right:auto}
+
+/* ── SIDEBAR TIMER MINI ── */
+.sidebar-timer-mini{margin:10px 14px 4px;padding:10px 14px;border-radius:10px;background:var(--orange-pale);border:2px solid var(--border);display:none}
+.sidebar-timer-mini.visible{display:block}
+.sidebar-timer-mini-clock{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:3px;text-align:center}
+.sidebar-timer-mini-clock.running{color:var(--orange)}
+.sidebar-timer-mini-clock.warning{color:var(--danger);animation:pulse 1s infinite}
+.sidebar-timer-mini-btns{display:flex;gap:6px;margin-top:6px}
+.sidebar-timer-mini-btns button{flex:1;padding:4px 0;border-radius:6px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.stmb-play{background:var(--orange);color:#fff}
+.stmb-play:hover{background:var(--orange-deep)}
+.stmb-reset{background:var(--cream);color:var(--text-mid);border:1.5px solid var(--border) !important}
+.stmb-reset:hover{color:var(--orange);border-color:var(--orange) !important}
+
+/* ── TOGGLE BUTTON ── */
+.sidebar-toggle{position:fixed;top:16px;left:16px;z-index:300;width:36px;height:36px;border-radius:10px;border:2px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px var(--shadow);transition:all .15s;font-size:15px;color:var(--text-mid)}
+html[dir="rtl"] .sidebar-toggle{left:auto;right:16px}
+.sidebar-toggle:hover{background:var(--orange-pale);color:var(--orange);border-color:var(--orange)}
+.sidebar-toggle.shifted{left:calc(var(--sidebar-w) + 14px)}
+html[dir="rtl"] .sidebar-toggle.shifted{left:auto;right:calc(var(--sidebar-w) + 14px)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;padding:32px 36px;padding-top:36px;transition:padding .25s}
+.page-header{margin-bottom:32px;padding-top:16px}
+.page-title{font-family:'Fraunces',serif;font-size:36px;font-weight:700;color:var(--text);line-height:1.1}
+html[lang="ar"] .page-title{font-family:'Noto Sans Arabic',serif}
+.page-title span{color:var(--orange)}
+.page-sub{font-size:14px;color:var(--text-light);margin-top:6px}
+
+/* ── STACKED CARD ── */
+.card-stack{position:relative;margin-bottom:28px}
+.card-stack::before,.card-stack::after{content:'';position:absolute;border-radius:14px;background:var(--border)}
+.card-stack::before{bottom:-8px;left:8px;right:8px;height:100%;z-index:0;opacity:.6}
+.card-stack::after{bottom:-4px;left:4px;right:4px;height:100%;z-index:1;opacity:.8}
+.card{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:24px;position:relative;z-index:2;box-shadow:0 2px 20px var(--shadow)}
+.card-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+html[lang="ar"] .card-title{font-family:'Noto Sans Arabic',serif}
+.card-title-icon{width:32px;height:32px;border-radius:8px;background:var(--orange-pale);display:flex;align-items:center;justify-content:center;font-size:16px}
+
+/* ── STATS ── */
+.bac-card{background:linear-gradient(135deg,var(--orange),var(--amber));color:#fff;border-radius:14px;padding:28px;box-shadow:0 4px 24px rgba(255,107,53,.35);position:relative;overflow:hidden}
+.bac-card::before{content:'BAC';position:absolute;right:-10px;top:-10px;font-family:'Fraunces',serif;font-size:80px;font-weight:700;opacity:.12;color:#fff}
+.bac-score-big{font-family:'Fraunces',serif;font-size:52px;font-weight:700;line-height:1}
+.bac-label{font-size:13px;opacity:.85;margin-top:4px;font-weight:500}
+.bac-status{margin-top:16px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.25);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.modules-circles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.module-circle-card{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:transform .2s,box-shadow .2s;cursor:pointer}
+.module-circle-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--shadow)}
+.circle-wrap{position:relative;display:inline-block;margin-bottom:8px}
+.circle-svg{transform:rotate(-90deg)}
+.circle-bg{fill:none;stroke:var(--border);stroke-width:8}
+.circle-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.circle-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Fraunces',serif;font-weight:700;font-size:16px;color:var(--text)}
+.circle-text small{display:block;font-size:9px;color:var(--text-light);font-family:'DM Sans';font-weight:500}
+.module-circle-name{font-size:11px;font-weight:600;color:var(--text-mid);line-height:1.3}
+.module-circle-coeff{font-size:10px;color:var(--text-light);margin-top:2px}
+.coeff-table{width:100%;border-collapse:collapse}
+.coeff-table th{text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-light);padding:8px 12px;border-bottom:2px solid var(--border)}
+html[dir="rtl"] .coeff-table th{text-align:right}
+.coeff-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.coeff-table tr:last-child td{border-bottom:none}
+.coeff-input{width:60px;padding:4px 8px;border:2px solid var(--border);border-radius:6px;font-family:'DM Sans';font-size:13px;text-align:center;background:var(--cream);color:var(--text)}
+.coeff-input:focus{outline:none;border-color:var(--orange)}
+.score-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.score-pill.good{background:#E8F8EE;color:var(--success)}
+.score-pill.mid{background:#FFF3E0;color:var(--amber)}
+.score-pill.bad{background:#FFEAEA;color:var(--danger)}
+.score-pill.none{background:var(--orange-pale);color:var(--text-light)}
+
+/* ── OVERRIDE ── */
+.override-cell{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.override-input{width:72px;min-width:0;padding:4px 8px;border:2px solid var(--border);border-radius:6px;font-family:'DM Sans';font-size:12px;font-weight:600;text-align:center;background:#fff;color:var(--text);transition:border-color .15s}
+.override-input:focus{outline:none;border-color:var(--orange)}
+.override-input.active{border-color:var(--amber);background:#FFFBF0}
+.btn-override-set{padding:3px 8px;background:var(--orange);color:#fff;border:none;border-radius:5px;font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;transition:background .15s;white-space:nowrap;flex-shrink:0}
+.btn-override-set:hover{background:var(--orange-deep)}
+.btn-override-reset{padding:3px 6px;background:var(--cream);color:var(--text-light);border:1.5px solid var(--border);border-radius:5px;font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.btn-override-reset:hover{border-color:var(--danger);color:var(--danger);background:#FFEAEA}
+.override-badge{display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:700;color:var(--amber);background:#FFF8E0;border:1px solid var(--gold);padding:1px 5px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+.auto-badge{display:none}
+
+/* ── MODULE ── */
+.module-header-band{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding:20px 24px;border-radius:14px;border:2px solid var(--border);background:var(--card);box-shadow:0 2px 12px var(--shadow)}
+.module-color-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0}
+.module-avg-display{margin-left:auto;text-align:right}
+html[dir="rtl"] .module-avg-display{margin-left:0;margin-right:auto;text-align:left}
+.module-avg-big{font-family:'Fraunces',serif;font-size:32px;font-weight:700;color:var(--orange)}
+.module-avg-label{font-size:11px;color:var(--text-light)}
+
+/* ── TIMER ── */
+.timer-display{font-family:'Fraunces',serif;font-size:48px;font-weight:700;color:var(--text);letter-spacing:4px;text-align:center;margin:12px 0}
+.timer-display.running{color:var(--orange)}
+.timer-display.warning{color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.timer-presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.preset-btn{padding:6px 14px;border:2px solid var(--border);border-radius:20px;background:var(--cream);font-size:12px;font-weight:600;cursor:pointer;color:var(--text-mid);transition:all .15s;font-family:inherit}
+.preset-btn:hover,.preset-btn.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+.timer-controls{display:flex;gap:10px;justify-content:center}
+.timer-btn{padding:9px 24px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;transition:all .15s}
+.timer-btn.start{background:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(255,107,53,.3)}
+.timer-btn.start:hover{background:var(--orange-deep)}
+.timer-btn.reset{background:var(--cream);color:var(--text-mid);border:2px solid var(--border)}
+.timer-btn.reset:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ── PDF VIEWER ── */
+.pdf-section-wrap{border:2px solid var(--border);border-radius:12px;overflow:hidden;background:var(--cream);margin-bottom:4px}
+.pdf-toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--paper);border-bottom:2px solid var(--border);flex-wrap:wrap}
+.pdf-fullscreen-btn{padding:5px 12px;border:2px solid var(--border);border-radius:8px;background:var(--card);color:var(--text-mid);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s;font-family:inherit;flex-shrink:0}
+.pdf-fullscreen-btn:hover{background:var(--orange-pale);color:var(--orange);border-color:var(--orange)}
+.pdf-canvas-wrap{background:#f0f0f0;display:flex;flex-direction:column;align-items:center;padding:16px;gap:12px;min-height:420px;max-height:560px;overflow-y:auto}
+.pdf-page-canvas{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:100%;display:block}
+.pdf-placeholder{height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-light);gap:10px;background:var(--cream)}
+
+/* ── PDF MODAL ── */
+.pdf-modal-overlay{position:fixed;inset:0;background:rgba(44,24,16,.5);z-index:800;display:none;flex-direction:column;--modal-bg:#f0f0f0;--modal-page-shadow:0 2px 10px rgba(0,0,0,.15)}
+.pdf-modal-overlay.open{display:flex}
+.pdf-modal-overlay.dark-theme{--modal-bg:#525659;--modal-page-shadow:0 4px 20px rgba(0,0,0,.5)}
+.pdf-modal-bar{display:flex;align-items:center;gap:10px;padding:10px 18px;background:var(--paper);border-bottom:2px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.pdf-modal-overlay.dark-theme .pdf-modal-bar{background:#1e1e1e;border-color:#333}
+.pdf-modal-timer{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--text);letter-spacing:4px;flex-shrink:0;min-width:130px}
+.pdf-modal-overlay.dark-theme .pdf-modal-timer{color:#eee}
+.pdf-modal-timer.running{color:var(--orange)}
+.pdf-modal-timer.warning{color:var(--danger);animation:pulse 1s infinite}
+.pdf-modal-timer-controls{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.pdf-modal-ctrl{height:36px;padding:0 16px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all .15s;display:flex;align-items:center;gap:5px}
+.pdf-modal-ctrl.play{background:var(--orange);color:#fff;min-width:100px;justify-content:center}
+.pdf-modal-ctrl.play:hover{background:var(--orange-deep)}
+.pdf-modal-ctrl.stop{background:var(--cream);color:var(--text-mid);border:2px solid var(--border);min-width:52px;justify-content:center}
+.pdf-modal-ctrl.stop:hover{border-color:var(--orange);color:var(--orange)}
+.pdf-modal-overlay.dark-theme .pdf-modal-ctrl.stop{background:#2a2a2a;color:#aaa;border-color:#444}
+.pdf-modal-overlay.dark-theme .pdf-modal-ctrl.stop:hover{border-color:var(--orange);color:var(--orange)}
+.pdf-modal-sep{width:1px;height:28px;background:var(--border);flex-shrink:0;margin:0 4px}
+.pdf-modal-overlay.dark-theme .pdf-modal-sep{background:#444}
+.pdf-zoom-group{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.pdf-zoom-btn{width:34px;height:34px;border-radius:7px;border:2px solid var(--border);background:var(--cream);color:var(--text-mid);cursor:pointer;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;line-height:1}
+.pdf-zoom-btn:hover{background:var(--orange-pale);color:var(--orange);border-color:var(--orange)}
+.pdf-modal-overlay.dark-theme .pdf-zoom-btn{background:#2a2a2a;color:#aaa;border-color:#444}
+.pdf-modal-overlay.dark-theme .pdf-zoom-btn:hover{background:#3a3a3a;color:var(--orange);border-color:var(--orange)}
+.pdf-zoom-label{font-size:12px;font-weight:700;color:var(--text-mid);min-width:42px;text-align:center}
+.pdf-modal-overlay.dark-theme .pdf-zoom-label{color:#aaa}
+.pdf-inline-zoom{display:flex;align-items:center;gap:5px}
+.pdf-inline-zoom-btn{width:28px;height:28px;border-radius:6px;border:2px solid var(--border);background:var(--cream);color:var(--text-mid);cursor:pointer;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.pdf-inline-zoom-btn:hover{background:var(--orange-pale);color:var(--orange);border-color:var(--orange)}
+.pdf-inline-zoom-label{font-size:11px;font-weight:700;color:var(--text-mid);min-width:36px;text-align:center}
+.pdf-theme-btn{height:34px;padding:0 12px;border-radius:8px;border:2px solid var(--border);background:var(--cream);color:var(--text-mid);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s;flex-shrink:0;font-family:inherit}
+.pdf-theme-btn:hover{background:var(--orange-pale);color:var(--orange);border-color:var(--orange)}
+.pdf-modal-overlay.dark-theme .pdf-theme-btn{background:#2a2a2a;color:#aaa;border-color:#444}
+.pdf-modal-overlay.dark-theme .pdf-theme-btn:hover{background:#3a3a3a;color:var(--orange);border-color:var(--orange)}
+.pdf-modal-spacer{flex:1}
+.pdf-modal-close{width:36px;height:36px;border-radius:8px;border:2px solid var(--border);background:var(--cream);color:var(--text-mid);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.pdf-modal-close:hover{background:#FFEAEA;color:var(--danger);border-color:var(--danger)}
+.pdf-modal-overlay.dark-theme .pdf-modal-close{background:#2a2a2a;color:#aaa;border-color:#444}
+.pdf-modal-overlay.dark-theme .pdf-modal-close:hover{background:#3a2222;color:var(--danger);border-color:var(--danger)}
+.pdf-modal-body{flex:1;overflow-y:auto;background:var(--modal-bg);display:flex;flex-direction:column;align-items:center;padding:20px;gap:14px;transition:background .2s}
+.pdf-modal-page{background:#fff;box-shadow:var(--modal-page-shadow);max-width:100%;display:block}
+
+/* ── EXAMS ── */
+.exam-list{display:flex;flex-direction:column;gap:10px}
+.exam-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid var(--border);border-radius:10px;background:var(--cream);transition:border-color .15s}
+.exam-item:hover{border-color:var(--gold)}
+.exam-name{font-size:13px;font-weight:600;flex:1}
+.exam-pdf-link{font-size:11px;color:var(--orange);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px}
+.exam-score-edit{width:55px;padding:4px 8px;border:2px solid var(--border);border-radius:6px;font-family:'DM Sans';font-size:13px;font-weight:600;text-align:center;background:#fff;color:var(--text)}
+.exam-score-edit:focus{outline:none;border-color:var(--orange)}
+.exam-del{width:28px;height:28px;border-radius:6px;border:none;background:var(--cream);color:var(--text-light);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.exam-del:hover{background:#FFEAEA;color:var(--danger)}
+
+/* ── CHAPTERS ── */
+.chapter-block{border:2px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden;background:var(--card)}
+.chapter-header{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--orange-pale);cursor:pointer;border-bottom:2px solid var(--border)}
+.chapter-header-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--text);flex:1}
+html[lang="ar"] .chapter-header-title{font-family:'Noto Sans Arabic',serif}
+.chapter-toggle{color:var(--text-light);font-size:12px;transition:transform .2s}
+.chapter-toggle.open{transform:rotate(180deg)}
+.chapter-del-btn{width:26px;height:26px;border:none;border-radius:6px;background:rgba(229,83,83,.1);color:var(--danger);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.chapter-del-btn:hover{background:rgba(229,83,83,.2)}
+.chapter-body{padding:12px 16px;display:none}
+.chapter-body.open{display:block}
+.link-list{list-style:none;margin-bottom:12px}
+.link-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:6px;background:var(--cream);border:1px solid var(--border)}
+.link-item a{flex:1;color:var(--orange);text-decoration:none;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+.link-item a:hover{color:var(--orange-deep)}
+.link-del{width:22px;height:22px;border:none;border-radius:4px;background:transparent;color:var(--text-light);cursor:pointer;font-size:11px;transition:all .15s}
+.link-del:hover{background:#FFEAEA;color:var(--danger)}
+.link-add-row{display:flex;gap:8px;flex-wrap:wrap}
+.link-input{flex:1;min-width:140px;padding:7px 10px;border:2px solid var(--border);border-radius:7px;font-family:inherit;font-size:12px;background:#fff}
+.link-input:focus{outline:none;border-color:var(--orange)}
+.btn-mini{padding:7px 14px;background:var(--orange);color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn-mini:hover{background:var(--orange-deep)}
+
+/* ── FORMS ── */
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.07em}
+.form-input{padding:8px 12px;border:2px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:#fff;color:var(--text);min-width:160px}
+.form-input:focus{outline:none;border-color:var(--orange)}
+.btn-add{padding:9px 18px;background:var(--orange);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;box-shadow:0 2px 8px rgba(255,107,53,.25)}
+.btn-add:hover{background:var(--orange-deep)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none}
+html[dir="rtl"] .toast{right:auto;left:24px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+
+/* ── MODALS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,24,16,.45);z-index:500;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:28px;max-width:480px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.15)}
+.modal-title{font-family:'Fraunces',serif;font-size:20px;font-weight:700;margin-bottom:20px;color:var(--text)}
+html[lang="ar"] .modal-title{font-family:'Noto Sans Arabic',serif}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.empty-state{text-align:center;padding:40px;color:var(--text-light)}
+.empty-state-icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--cream)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+.pdf-canvas-wrap::-webkit-scrollbar,.pdf-modal-body::-webkit-scrollbar{width:8px}
+.pdf-canvas-wrap::-webkit-scrollbar-track{background:#e0e0e0}
+.pdf-canvas-wrap::-webkit-scrollbar-thumb{background:#bbb;border-radius:4px}
+.pdf-modal-body::-webkit-scrollbar-track{background:#e0e0e0}
+.pdf-modal-body::-webkit-scrollbar-thumb{background:#bbb;border-radius:4px}
+.pdf-modal-overlay.dark-theme .pdf-modal-body::-webkit-scrollbar-track{background:#3a3a3a}
+.pdf-modal-overlay.dark-theme .pdf-modal-body::-webkit-scrollbar-thumb{background:#666}
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle shifted" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <div class="sidebar-logo">
+        <div class="logo-badge">📚 BAC</div><br/>
+        <span class="logo-sub" id="lbl-sub">Study Organizer 2026</span>
+        <div class="lang-toggle">
+          <button class="lang-btn active" onclick="setLang('en')" id="btn-en">English</button>
+          <button class="lang-btn" onclick="setLang('ar')" id="btn-ar">العربية</button>
+        </div>
+      </div>
+
+      <!-- Mini timer always visible in sidebar when a timer is set -->
+      <div class="sidebar-timer-mini" id="sidebar-timer-mini">
+        <div class="sidebar-timer-mini-clock" id="sidebar-timer-mini-clock">00:00:00</div>
+        <div class="sidebar-timer-mini-btns">
+          <button class="stmb-reset" onclick="resetTimer()">reset</button>
+          <button class="stmb-play" id="sidebar-timer-play-btn" onclick="toggleTimer()">▶ Start</button>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section" id="lbl-overview">Overview</div>
+        <div class="nav-item active" data-page="stats" onclick="navigate('stats')">
+          <span class="nav-dot filled" style="border-color:var(--orange);background:var(--orange)"></span>
+          <span id="lbl-stats-nav">Statistics</span>
+        </div>
+        <div class="nav-section" style="margin-top:8px" id="lbl-subjects">Subjects</div>
+        <div id="module-nav"></div>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="main" id="main-content">
+    <div id="page-stats"></div>
+    <div id="page-module" style="display:none"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- PDF FULLSCREEN MODAL -->
+<div class="pdf-modal-overlay" id="pdf-modal">
+  <div class="pdf-modal-bar">
+    <span class="pdf-modal-timer" id="pdf-modal-timer-display">00:00:00</span>
+    <div class="pdf-modal-timer-controls">
+      <button class="pdf-modal-ctrl stop" onclick="resetTimer()" title="Reset timer">reset</button>
+      <button class="pdf-modal-ctrl play" id="pdf-modal-play-btn" onclick="toggleTimer()">▶ Start</button>
+    </div>
+    <div class="pdf-modal-sep"></div>
+    <div class="pdf-zoom-group">
+      <button class="pdf-zoom-btn" onclick="modalZoom(-0.2)" title="Zoom out">−</button>
+      <span class="pdf-zoom-label" id="modal-zoom-label">100%</span>
+      <button class="pdf-zoom-btn" onclick="modalZoom(0.2)" title="Zoom in">+</button>
+      <button class="pdf-zoom-btn" onclick="modalZoomFit()" title="Fit width" style="width:auto;padding:0 10px;font-size:12px;font-weight:700">Fit</button>
+    </div>
+    <div class="pdf-modal-sep"></div>
+    <button class="pdf-theme-btn" id="pdf-theme-btn" onclick="togglePdfTheme()">🌙 Dark</button>
+    <div class="pdf-modal-spacer"></div>
+    <button class="pdf-modal-close" onclick="closePdfModal()">✕</button>
+  </div>
+  <div class="pdf-modal-body" id="pdf-modal-body"></div>
+</div>
+
+<!-- MODAL: add exam -->
+<div class="modal-overlay" id="modal-exam">
+  <div class="modal">
+    <div class="modal-title" id="lbl-modal-exam-title">📄 Add Exam</div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label" id="lbl-exam-name">Exam Name</label>
+      <input class="form-input" id="exam-name-input" placeholder="e.g. Mock Exam 1"/>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label" id="lbl-exam-score">Score /20 (optional)</label>
+      <input class="form-input" id="exam-score-input" type="number" min="0" max="20" step="0.5" placeholder="e.g. 14.5"/>
+    </div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label" id="lbl-exam-pdf">Exam PDF (optional)</label>
+      <input class="form-input" id="exam-pdf-input" type="file" accept=".pdf" style="padding:6px"/>
+    </div>
+    <div class="modal-actions">
+      <button class="timer-btn reset" onclick="closeModal('modal-exam')" id="lbl-cancel-exam">Cancel</button>
+      <button class="btn-add" onclick="submitExam()" id="lbl-add-exam">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: add chapter -->
+<div class="modal-overlay" id="modal-chapter">
+  <div class="modal">
+    <div class="modal-title" id="lbl-modal-ch-title">📖 Add Chapter</div>
+    <div class="form-group" style="margin-bottom:12px">
+      <label class="form-label" id="lbl-ch-title-label">Chapter Title</label>
+      <input class="form-input" id="chapter-title-input" placeholder="e.g. Chapter 1: Functions"/>
+    </div>
+    <div class="modal-actions">
+      <button class="timer-btn reset" onclick="closeModal('modal-chapter')" id="lbl-cancel-ch">Cancel</button>
+      <button class="btn-add" onclick="submitChapter()" id="lbl-add-ch">Add</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const API = '';
+const STRINGS = {
+  en: {
+    sub:'Study Organizer 2026', overview:'Overview', statsNav:'Statistics', subjects:'Subjects',
+    statsTitle:'My <span>Statistics</span>', statsSub:'Performance tracking & estimated BAC grade',
+    estimatedBac:'ESTIMATED BAC AVERAGE', outOf20:'out of 20',
+    quickSummary:'Quick Summary', modulesSet:'Subjects entered', totalCoeff:'Total coefficients', bestSubject:'Best subject',
+    performanceTitle:'Performance by Subject', coeffTitle:'Coefficients & Scores',
+    colSubject:'Subject', colCoeff:'Coefficient', colAvg:'Average', colExams:'Exams',
+    coeff:'Coeff.', avgLabel:'Average /20',
+    timerTitle:'Exam Timer', hours:'hours',
+    examPapersTitle:'Exam Papers', chaptersTitle:'Chapters & Resources',
+    addBtn:'+ Add', addChapterBtn:'+ Chapter',
+    noPdf:'No PDF exam added', noExams:'No exams added', noChapters:'No chapters added', noLinks:'No resources yet',
+    modalExamTitle:'📄 Add Exam', examNameLabel:'Exam Name', examNamePh:'e.g. Mock Exam 1',
+    examScoreLabel:'Score /20 (optional)', examScorePh:'e.g. 14.5', examPdfLabel:'Exam PDF (optional)',
+    modalChTitle:'📖 Add Chapter', chTitleLabel:'Chapter Title', chTitlePh:'e.g. Chapter 1: Functions',
+    cancel:'Cancel', add:'Add',
+    examsCount:(s,t)=>`${s}/${t} exams`,
+    toastExamAdded:'Exam added ✓', toastScoreSaved:'Score saved ✓', toastExamDeleted:'Exam deleted',
+    toastChAdded:'Chapter added ✓', toastChDeleted:'Chapter deleted',
+    toastLinkAdded:'Link added ✓', toastLinkDeleted:'Link deleted',
+    toastCoeffUpdated:'Coefficient updated ✓',
+    toastOverrideSet:'Manual override saved ✓', toastOverrideReset:'Reset to auto-calculated ✓',
+    overrideLabel:'Override', autoLabel:'Auto', setBtn:'Set', resetBtn:'Reset',
+    overrideTip:'Manual override active', autoTip:'Auto-calculated from exams',
+    toastNameReq:'Name is required', toastTitleReq:'Title is required', toastLinkReq:'Title and URL are required',
+    timerDone:'⏰ Time is up!', start:'▶ Start', pause:'⏸ Pause', resume:'▶ Resume', reset:'Reset',
+    statusMention:'🏅 With Honours', statusAdmis:'✅ Passed', statusRattrapage:'❌ Retake',
+    videoTitle:'Video title', addLink:'+ Add', fullscreen:'⛶ Full Page',
+  },
+  ar: {
+    sub:'منظّم الدراسة 2026', overview:'نظرة عامة', statsNav:'الإحصائيات', subjects:'المواد',
+    statsTitle:'<span>إحصائياتي</span>', statsSub:'متابعة الأداء وحساب معدل البكالوريا',
+    estimatedBac:'معدل البكالوريا المتوقع', outOf20:'من 20',
+    quickSummary:'ملخص سريع', modulesSet:'المواد المُدخلة', totalCoeff:'مجموع المعاملات', bestSubject:'أفضل مادة',
+    performanceTitle:'الأداء حسب المادة', coeffTitle:'المعاملات والدرجات',
+    colSubject:'المادة', colCoeff:'المعامل', colAvg:'المعدل', colExams:'الامتحانات',
+    coeff:'م.', avgLabel:'المعدل /20',
+    timerTitle:'مؤقت الامتحان', hours:'ساعة',
+    examPapersTitle:'أوراق الامتحانات', chaptersTitle:'الفصول والموارد',
+    addBtn:'+ إضافة', addChapterBtn:'+ فصل',
+    noPdf:'لم يتم إضافة ملف PDF بعد', noExams:'لا توجد امتحانات بعد', noChapters:'لا توجد فصول بعد', noLinks:'لا توجد موارد بعد',
+    modalExamTitle:'📄 إضافة امتحان', examNameLabel:'اسم الامتحان', examNamePh:'مثال: امتحان تجريبي 1',
+    examScoreLabel:'الدرجة /20 (اختياري)', examScorePh:'مثال: 14.5', examPdfLabel:'ملف PDF (اختياري)',
+    modalChTitle:'📖 إضافة فصل', chTitleLabel:'عنوان الفصل', chTitlePh:'مثال: الفصل 1 - الدوال',
+    cancel:'إلغاء', add:'إضافة',
+    examsCount:(s,t)=>`${s}/${t} امتحانات`,
+    toastExamAdded:'تمت إضافة الامتحان ✓', toastScoreSaved:'تم حفظ الدرجة ✓', toastExamDeleted:'تم حذف الامتحان',
+    toastChAdded:'تمت إضافة الفصل ✓', toastChDeleted:'تم حذف الفصل',
+    toastLinkAdded:'تمت إضافة الرابط ✓', toastLinkDeleted:'تم حذف الرابط',
+    toastCoeffUpdated:'تم تحديث المعامل ✓',
+    toastOverrideSet:'تم حفظ التعديل اليدوي ✓', toastOverrideReset:'تمت إعادة التعيين التلقائي ✓',
+    overrideLabel:'تعديل', autoLabel:'تلقائي', setBtn:'حفظ', resetBtn:'إعادة',
+    overrideTip:'تعديل يدوي نشط', autoTip:'محسوب تلقائياً من الامتحانات',
+    toastNameReq:'الاسم مطلوب', toastTitleReq:'العنوان مطلوب', toastLinkReq:'العنوان والرابط مطلوبان',
+    timerDone:'⏰ انتهى الوقت!', start:'▶ ابدأ', pause:'⏸ إيقاف', resume:'▶ استئناف', reset:'إعادة',
+    statusMention:'🏅 بامتياز', statusAdmis:'✅ ناجح', statusRattrapage:'❌ استدراكي',
+    videoTitle:'عنوان الفيديو', addLink:'+ إضافة', fullscreen:'⛶ عرض كامل',
+  }
+};
+
+let lang = 'en';
+const s = k => STRINGS[lang][k];
+const modName = m => lang === 'ar' ? (m.name_ar || m.name_en || m.id) : (m.name_en || m.id);
+
+// ── SIDEBAR TOGGLE ────────────────────────────────────────────────────────────
+let sidebarOpen = true;
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
+  document.getElementById('sidebar-toggle').classList.toggle('shifted', sidebarOpen);
+}
+
+// ── LANG ──────────────────────────────────────────────────────────────────────
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l;
+  document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-ar').classList.toggle('active', l === 'ar');
+  applyStaticLabels();
+  fetchModules().then(modules => {
+    buildSidebarNav(modules);
+    if (currentModule) setActive('module-' + currentModule);
+    else setActive('stats');
+  });
+  const sp = document.getElementById('page-stats');
+  if (sp.style.display !== 'none' && sp.innerHTML) renderStats();
+  if (currentModule) renderModule(currentModule);
+}
+
+function applyStaticLabels() {
+  document.getElementById('lbl-sub').textContent = s('sub');
+  document.getElementById('lbl-overview').textContent = s('overview');
+  document.getElementById('lbl-stats-nav').textContent = s('statsNav');
+  document.getElementById('lbl-subjects').textContent = s('subjects');
+  document.getElementById('lbl-modal-exam-title').textContent = s('modalExamTitle');
+  document.getElementById('lbl-exam-name').textContent = s('examNameLabel');
+  document.getElementById('exam-name-input').placeholder = s('examNamePh');
+  document.getElementById('lbl-exam-score').textContent = s('examScoreLabel');
+  document.getElementById('exam-score-input').placeholder = s('examScorePh');
+  document.getElementById('lbl-exam-pdf').textContent = s('examPdfLabel');
+  document.getElementById('lbl-cancel-exam').textContent = s('cancel');
+  document.getElementById('lbl-add-exam').textContent = s('add');
+  document.getElementById('lbl-modal-ch-title').textContent = s('modalChTitle');
+  document.getElementById('lbl-ch-title-label').textContent = s('chTitleLabel');
+  document.getElementById('chapter-title-input').placeholder = s('chTitlePh');
+  document.getElementById('lbl-cancel-ch').textContent = s('cancel');
+  document.getElementById('lbl-add-ch').textContent = s('add');
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentModule = null;
+let inlineScale = 1.2;
+let modalScale = 1.6;
+let modalPdfUrl = null;
+let pdfDarkTheme = false;
+let currentModuleExams = [];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TIMER — persisted via localStorage, wall-clock based so it counts in background
+// ══════════════════════════════════════════════════════════════════════════════
+// Storage schema: { initial, remaining, running, startedAt }
+// When running: remaining = initial - (Date.now() - startedAt) / 1000
+
+const TIMER_KEY = 'bac_timer_v1';
+
+let timerInterval = null;
+
+function timerSave(state) {
+  localStorage.setItem(TIMER_KEY, JSON.stringify(state));
+}
+
+function timerLoad() {
+  try {
+    const raw = localStorage.getItem(TIMER_KEY);
+    if (!raw) return { initial: 0, remaining: 0, running: false, startedAt: null };
+    const s = JSON.parse(raw);
+    // If was running, compute elapsed since startedAt
+    if (s.running && s.startedAt) {
+      const elapsed = (Date.now() - s.startedAt) / 1000;
+      s.remaining = Math.max(0, s.remaining - elapsed);
+      s.startedAt = Date.now(); // reset so next load is accurate
+      if (s.remaining <= 0) { s.running = false; s.startedAt = null; }
+    }
+    return s;
+  } catch { return { initial: 0, remaining: 0, running: false, startedAt: null }; }
+}
+
+// Single shared state object (always in sync with localStorage)
+let TS = timerLoad();
+// If it was running, resume the interval
+if (TS.running) _startInterval();
+
+function timerGet() { return TS; }
+
+function _startInterval() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (!TS.running) { clearInterval(timerInterval); return; }
+    const elapsed = (Date.now() - TS.startedAt) / 1000;
+    TS.remaining = Math.max(0, TS.initial - elapsed);
+    // Don't mutate startedAt here; keep original to stay wall-clock accurate
+    if (TS.remaining <= 0) {
+      TS.remaining = 0;
+      TS.running = false;
+      TS.startedAt = null;
+      clearInterval(timerInterval);
+      timerSave(TS);
+      toast(s('timerDone'));
+    }
+    updateAllClocks();
+  }, 500); // 500ms for responsiveness without flicker
+}
+
+function setTimer(str) {
+  clearInterval(timerInterval);
+  const [h, m] = str.split(':').map(Number);
+  TS = { initial: (h * 60 + m) * 60, remaining: (h * 60 + m) * 60, running: false, startedAt: null };
+  timerSave(TS);
+  updateAllClocks();
+  // highlight preset
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === str));
+}
+
+function toggleTimer() {
+  if (TS.remaining <= 0) return;
+  if (TS.running) {
+    // pause
+    TS.running = false;
+    TS.startedAt = null;
+    clearInterval(timerInterval);
+  } else {
+    // start/resume — anchor startedAt so elapsed = initial - remaining
+    TS.startedAt = Date.now() - (TS.initial - TS.remaining) * 1000;
+    TS.running = true;
+    _startInterval();
+  }
+  timerSave(TS);
+  updateAllClocks();
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  TS.remaining = TS.initial;
+  TS.running = false;
+  TS.startedAt = null;
+  timerSave(TS);
+  updateAllClocks();
+}
+
+function timerFmt(t) {
+  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), sec = Math.floor(t % 60);
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function timerClass(suffix) {
+  if (TS.remaining <= 300 && TS.remaining > 0) return suffix + ' warning';
+  if (TS.running) return suffix + ' running';
+  return suffix;
+}
+
+// Update EVERY clock surface at once
+function updateAllClocks() {
+  const txt = timerFmt(TS.remaining);
+  const playLabel = TS.running ? s('pause') : (TS.remaining < TS.initial && TS.remaining > 0 ? s('resume') : s('start'));
+
+  // 1. Main page timer
+  const mainDisp = document.getElementById('timer-display');
+  if (mainDisp) { mainDisp.textContent = txt; mainDisp.className = timerClass('timer-display'); }
+  const mainBtn = document.getElementById('timer-start-btn');
+  if (mainBtn) mainBtn.textContent = playLabel;
+
+  // 2. Sidebar mini
+  const mini = document.getElementById('sidebar-timer-mini');
+  const miniClock = document.getElementById('sidebar-timer-mini-clock');
+  const miniPlay = document.getElementById('sidebar-timer-play-btn');
+  if (mini) {
+    const hasTimer = TS.initial > 0;
+    mini.classList.toggle('visible', hasTimer);
+    if (miniClock) { miniClock.textContent = txt; miniClock.className = timerClass('sidebar-timer-mini-clock'); }
+    if (miniPlay) miniPlay.textContent = TS.running ? s('pause') : (TS.remaining < TS.initial && TS.remaining > 0 ? s('resume') : s('start'));
+  }
+
+  // 3. PDF modal timer
+  const modalDisp = document.getElementById('pdf-modal-timer-display');
+  if (modalDisp) { modalDisp.textContent = txt; modalDisp.className = timerClass('pdf-modal-timer'); }
+  const modalPlay = document.getElementById('pdf-modal-play-btn');
+  if (modalPlay) modalPlay.textContent = TS.running ? '⏸ Pause' : (TS.remaining < TS.initial && TS.remaining > 0 ? '▶ Resume' : '▶ Start');
+}
+
+// ── FETCH / NAV ───────────────────────────────────────────────────────────────
+async function init() {
+  const modules = await fetchModules();
+  buildSidebarNav(modules);
+  renderStats();
+  updateAllClocks(); // show sidebar mini from restored state
+}
+
+async function fetchModules() {
+  return fetch(`${API}/api/modules`).then(r => r.json());
+}
+
+function buildSidebarNav(modules) {
+  document.getElementById('module-nav').innerHTML = modules.map(m => `
+    <div class="nav-item" data-page="module-${m.id}" onclick="navigate('module','${m.id}')" id="nav-${m.id}">
+      <span class="nav-dot filled" style="border-color:${m.color};background:${m.color}"></span>
+      <span style="flex:1;font-size:12.5px">${modName(m)}</span>
+      <span class="nav-score" id="nav-score-${m.id}">—</span>
+    </div>`).join('');
+}
+
+function setActive(page) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`[data-page="${page}"]`);
+  if (el) el.classList.add('active');
+}
+
+function navigate(page, moduleId) {
+  document.getElementById('page-stats').style.display = 'none';
+  document.getElementById('page-module').style.display = 'none';
+  if (page === 'stats') {
+    setActive('stats'); currentModule = null;
+    document.getElementById('page-stats').style.display = '';
+    renderStats();
+  } else {
+    setActive(`module-${moduleId}`);
+    document.getElementById('page-module').style.display = '';
+    renderModule(moduleId);
+  }
+}
+
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = `toast ${type} show`;
+  setTimeout(() => el.className = 'toast', 2800);
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── PDF ───────────────────────────────────────────────────────────────────────
+async function renderPdfInto(url, container, scale) {
+  container.innerHTML = '<div style="color:#999;font-size:13px;padding:30px;text-align:center">Loading PDF…</div>';
+  try {
+    const pdf = await pdfjsLib.getDocument(url).promise;
+    container.innerHTML = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.className = container.id === 'pdf-modal-body' ? 'pdf-modal-page' : 'pdf-page-canvas';
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      container.appendChild(canvas);
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    }
+  } catch(e) {
+    container.innerHTML = `<div style="color:var(--danger);font-size:13px;padding:20px">Could not load PDF.</div>`;
+  }
+}
+
+let currentPdfUrl = null;
+
+function switchInlinePdf(url) {
+  currentPdfUrl = url;
+  const wrap = document.getElementById('pdf-canvas-wrap');
+  if (wrap) renderPdfInto(url, wrap, inlineScale);
+}
+
+function inlineZoom(delta) {
+  inlineScale = Math.max(0.4, Math.min(3.0, inlineScale + delta));
+  const lbl = document.getElementById('inline-zoom-label');
+  if (lbl) lbl.textContent = Math.round(inlineScale / 1.2 * 100) + '%';
+  if (currentPdfUrl) { const w = document.getElementById('pdf-canvas-wrap'); if (w) renderPdfInto(currentPdfUrl, w, inlineScale); }
+}
+
+function openPdfModal(activeUrl) {
+  modalPdfUrl = activeUrl;
+  document.getElementById('pdf-modal').classList.add('open');
+  updateAllClocks();
+  updateModalZoomLabel();
+  renderPdfInto(modalPdfUrl, document.getElementById('pdf-modal-body'), modalScale);
+}
+
+function modalZoom(delta) {
+  modalScale = Math.max(0.4, Math.min(4.0, modalScale + delta));
+  updateModalZoomLabel();
+  if (modalPdfUrl) renderPdfInto(modalPdfUrl, document.getElementById('pdf-modal-body'), modalScale);
+}
+
+function modalZoomFit() {
+  const body = document.getElementById('pdf-modal-body');
+  if (!body) return;
+  modalScale = Math.max(0.4, Math.min(4.0, (body.clientWidth - 40) / 595));
+  updateModalZoomLabel();
+  if (modalPdfUrl) renderPdfInto(modalPdfUrl, document.getElementById('pdf-modal-body'), modalScale);
+}
+
+function updateModalZoomLabel() {
+  const lbl = document.getElementById('modal-zoom-label');
+  if (lbl) lbl.textContent = Math.round(modalScale / 1.6 * 100) + '%';
+}
+
+function togglePdfTheme() {
+  pdfDarkTheme = !pdfDarkTheme;
+  document.getElementById('pdf-modal').classList.toggle('dark-theme', pdfDarkTheme);
+  document.getElementById('pdf-theme-btn').textContent = pdfDarkTheme ? '☀️ Light' : '🌙 Dark';
+}
+
+function closePdfModal() {
+  document.getElementById('pdf-modal').classList.remove('open');
+  document.getElementById('pdf-modal-body').innerHTML = '';
+}
+
+document.getElementById('pdf-modal').addEventListener('click', e => { if (e.target === document.getElementById('pdf-modal')) closePdfModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePdfModal(); });
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+async function renderStats() {
+  const data = await fetch(`${API}/api/stats`).then(r => r.json());
+  data.modules.forEach(m => {
+    const el = document.getElementById(`nav-score-${m.id}`);
+    if (el) el.textContent = m.average !== null ? m.average.toFixed(1) : '—';
+  });
+  const bs = data.bac_score;
+  const status = bs === null ? '—' : bs >= 14 ? s('statusMention') : bs >= 10 ? s('statusAdmis') : s('statusRattrapage');
+  const circles = data.modules.map(m => {
+    const R=42, C=2*Math.PI*R, dash=(m.percentage/100)*C;
+    return `<div class="module-circle-card" onclick="navigate('module','${m.id}')">
+      <div class="circle-wrap">
+        <svg class="circle-svg" width="100" height="100" viewBox="0 0 100 100">
+          <circle class="circle-bg" cx="50" cy="50" r="${R}"/>
+          <circle class="circle-fg" cx="50" cy="50" r="${R}" stroke="${m.color}" stroke-dasharray="${C}" stroke-dashoffset="${C-dash}"/>
+        </svg>
+        <div class="circle-text">${m.average!==null?m.average.toFixed(1):'—'}<small>/20</small></div>
+      </div>
+      <div class="module-circle-name">${modName(m)}</div>
+      <div class="module-circle-coeff">${s('coeff')} ${m.coefficient}</div>
+    </div>`;
+  }).join('');
+  const rows = data.modules.map(m => {
+    const sc=m.average, pc=sc===null?'none':sc>=14?'good':sc>=10?'mid':'bad';
+    const isOverridden=m.is_overridden, autoVal=m.auto_average;
+    const badgeHtml = isOverridden ? `<span class="override-badge" title="${s('overrideTip')}">✏️ ${s('overrideLabel')}</span>` : '';
+    const autoHint = isOverridden&&autoVal!==null ? `<span style="font-size:10px;color:var(--text-light);text-decoration:line-through">${autoVal.toFixed(2)}</span>` : '';
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <span style="width:10px;height:10px;border-radius:50%;background:${m.color};flex-shrink:0;display:inline-block"></span>
+        <span>${modName(m)}</span>
+      </div></td>
+      <td><input class="coeff-input" type="number" min="1" max="9" value="${m.coefficient}" onchange="updateCoeff('${m.id}',this.value)"/></td>
+      <td><div class="override-cell">
+        <span class="score-pill ${pc}">${sc!==null?sc.toFixed(2)+'/20':'N/A'}</span>
+        ${badgeHtml}${autoHint}
+        <input class="override-input ${isOverridden?'active':''}" type="number" min="0" max="20" step="0.25"
+          id="ov-${m.id}" value="${isOverridden?m.manual_override:''}" placeholder="0–20"/>
+        <button class="btn-override-set" onclick="setOverride('${m.id}')">${s('setBtn')}</button>
+        ${isOverridden?`<button class="btn-override-reset" onclick="resetOverride('${m.id}')">${s('resetBtn')}</button>`:''}
+      </div></td>
+      <td style="color:var(--text-light);font-size:12px;white-space:nowrap">${STRINGS[lang].examsCount(m.scored_count,m.exam_count)}</td>
+    </tr>`;
+  }).join('');
+  const best = (() => { const w=data.modules.filter(m=>m.average!==null); return w.length?modName(w.sort((a,b)=>b.average-a.average)[0]):'—'; })();
+  document.getElementById('page-stats').innerHTML = `
+    <div class="page-header">
+      <div class="page-title">${s('statsTitle')}</div>
+      <div class="page-sub">${s('statsSub')}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
+      <div class="bac-card">
+        <div class="bac-label">${s('estimatedBac')}</div>
+        <div class="bac-score-big">${bs!==null?bs.toFixed(2):'—'}</div>
+        <div class="bac-label">${s('outOf20')}</div>
+        <div class="bac-status">${status}</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center;gap:12px">
+        <div style="font-size:13px;color:var(--text-light);font-weight:500">${s('quickSummary')}</div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span>${s('modulesSet')}</span><strong>${data.modules.filter(m=>m.average!==null).length}/${data.modules.length}</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span>${s('totalCoeff')}</span><strong>${data.total_coeff}</strong></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span>${s('bestSubject')}</span><strong style="color:var(--orange)">${best}</strong></div>
+      </div>
+    </div>
+    <div class="card-stack"><div class="card">
+      <div class="card-title"><span class="card-title-icon">📊</span>${s('performanceTitle')}</div>
+      <div class="modules-circles">${circles}</div>
+    </div></div>
+    <div class="card-stack"><div class="card">
+      <div class="card-title"><span class="card-title-icon">⚙️</span>${s('coeffTitle')}</div>
+      <table class="coeff-table">
+        <thead><tr><th>${s('colSubject')}</th><th>${s('colCoeff')}</th><th>${s('colAvg')} / ${s('overrideLabel')}</th><th>${s('colExams')}</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div></div>`;
+}
+
+async function updateCoeff(moduleId, val) {
+  const fd = new FormData(); fd.append('coefficient', val);
+  await fetch(`${API}/api/modules/${moduleId}/coefficient`, {method:'PUT',body:fd});
+  toast(s('toastCoeffUpdated'), 'success'); renderStats();
+}
+async function setOverride(moduleId) {
+  const input = document.getElementById(`ov-${moduleId}`);
+  const val = parseFloat(input.value);
+  if (isNaN(val)||val<0||val>20) { toast(s('toastNameReq'),'error'); return; }
+  const fd = new FormData(); fd.append('score', val);
+  await fetch(`${API}/api/modules/${moduleId}/override`, {method:'PUT',body:fd});
+  toast(s('toastOverrideSet'),'success'); renderStats();
+}
+async function resetOverride(moduleId) {
+  await fetch(`${API}/api/modules/${moduleId}/override`, {method:'DELETE'});
+  toast(s('toastOverrideReset'),'success'); renderStats();
+}
+
+// ── MODULE ────────────────────────────────────────────────────────────────────
+async function renderModule(moduleId) {
+  currentModule = moduleId;
+  const [modules, exams, chapters, stats] = await Promise.all([
+    fetchModules(),
+    fetch(`${API}/api/exams/${moduleId}`).then(r=>r.json()),
+    fetch(`${API}/api/chapters/${moduleId}`).then(r=>r.json()),
+    fetch(`${API}/api/stats`).then(r=>r.json()),
+  ]);
+  const mod = modules.find(m=>m.id===moduleId);
+  const avg = stats.modules.find(m=>m.id===moduleId)?.average;
+  currentModuleExams = exams;
+  const pdfs = exams.filter(e=>e.pdf_path);
+
+  let pdfHtml;
+  if (pdfs.length) {
+    const firstUrl = pdfs[0].pdf_path;
+    pdfHtml = `
+      <div class="pdf-section-wrap">
+        <div class="pdf-toolbar">
+          <div class="pdf-inline-zoom">
+            <button class="pdf-inline-zoom-btn" onclick="inlineZoom(-0.2)">−</button>
+            <span class="pdf-inline-zoom-label" id="inline-zoom-label">100%</span>
+            <button class="pdf-inline-zoom-btn" onclick="inlineZoom(0.2)">+</button>
+          </div>
+          <button class="pdf-fullscreen-btn" style="margin-left:auto" onclick="openPdfModal('${firstUrl}')">${s('fullscreen')}</button>
+        </div>
+        <div class="pdf-canvas-wrap" id="pdf-canvas-wrap"></div>
+      </div>`;
+  } else {
+    pdfHtml = `<div class="pdf-placeholder"><div style="font-size:40px">📄</div><p style="font-size:13px;color:var(--text-light)">${s('noPdf')}</p></div>`;
+  }
+
+  const examsHtml = exams.length ? exams.map(e=>`
+    <div class="exam-item">
+      <span style="font-size:18px">📝</span>
+      <span class="exam-name">${e.name}</span>
+      ${e.pdf_path?`<button class="exam-pdf-link" style="background:none;border:none;cursor:pointer;padding:0;font-family:inherit;font-size:11px;color:var(--orange);font-weight:500" onclick="switchInlinePdf('${e.pdf_path}');document.getElementById('pdf-canvas-wrap')?.scrollIntoView({behavior:'smooth',block:'start'})">📄 View</button>`:''}
+      <input class="exam-score-edit" type="number" min="0" max="20" step="0.5"
+        value="${e.score??''}" placeholder="—"
+        onchange="saveScore('${moduleId}','${e.id}',this.value)"/>
+      <span style="font-size:10px;color:var(--text-light)">/20</span>
+      <button class="exam-del" onclick="deleteExam('${moduleId}','${e.id}')">✕</button>
+    </div>`).join('')
+    : `<div class="empty-state"><div class="empty-state-icon">📭</div><p>${s('noExams')}</p></div>`;
+
+  const chaptersHtml = chapters.length ? chapters.map(ch=>`
+    <div class="chapter-block" id="ch-${ch.id}">
+      <div class="chapter-header" onclick="toggleChapter('${ch.id}')">
+        <span style="color:var(--orange);font-size:16px">📖</span>
+        <span class="chapter-header-title">${ch.title}</span>
+        <button class="chapter-del-btn" onclick="event.stopPropagation();deleteChapter('${moduleId}','${ch.id}')">🗑</button>
+        <span class="chapter-toggle" id="toggle-${ch.id}">▼</span>
+      </div>
+      <div class="chapter-body open" id="body-${ch.id}">
+        <ul class="link-list">${renderLinks(ch.links, moduleId, ch.id)}</ul>
+        <div class="link-add-row">
+          <input class="link-input" id="lt-${ch.id}" placeholder="${s('videoTitle')}"/>
+          <input class="link-input" id="lu-${ch.id}" placeholder="YouTube URL"/>
+          <button class="btn-mini" onclick="addLink('${moduleId}','${ch.id}')">${s('addLink')}</button>
+        </div>
+      </div>
+    </div>`).join('')
+    : `<div class="empty-state"><div class="empty-state-icon">📚</div><p>${s('noChapters')}</p></div>`;
+
+  const presets = ['1:30','2:00','2:30','3:00','3:30','4:00','4:30'];
+  const presetsHtml = presets.map(p=>`
+    <button class="preset-btn" onclick="setTimer('${p}')" data-preset="${p}">${p} ${s('hours')}</button>`).join('');
+
+  document.getElementById('page-module').innerHTML = `
+    <div class="module-header-band">
+      <span class="module-color-dot" style="background:${mod.color}"></span>
+      <div>
+        <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:700">${modName(mod)}</div>
+        <div style="font-size:12px;color:var(--text-light)">${s('coeff')} ${mod.coefficient}</div>
+      </div>
+      <div class="module-avg-display">
+        <div class="module-avg-big">${avg!=null?avg.toFixed(2):'—'}</div>
+        <div class="module-avg-label">${s('avgLabel')}</div>
+      </div>
+    </div>
+    <div class="card-stack"><div class="card">
+      <div class="card-title"><span class="card-title-icon">⏱</span>${s('timerTitle')}</div>
+      <div class="timer-presets">${presetsHtml}</div>
+      <div class="timer-display" id="timer-display">00:00:00</div>
+      <div class="timer-controls">
+        <button class="timer-btn reset" onclick="resetTimer()">${s('reset')}</button>
+        <button class="timer-btn start" id="timer-start-btn" onclick="toggleTimer()">${s('start')}</button>
+      </div>
+    </div></div>
+    <div class="card-stack"><div class="card">
+      <div class="card-title">
+        <span class="card-title-icon">📄</span>${s('examPapersTitle')}
+        <button class="btn-add" style="margin-left:auto;font-size:12px;padding:7px 14px" onclick="openModal('modal-exam')">${s('addBtn')}</button>
+      </div>
+      <div style="margin-bottom:16px">${pdfHtml}</div>
+      <div class="exam-list">${examsHtml}</div>
+    </div></div>
+    <div class="card-stack"><div class="card">
+      <div class="card-title">
+        <span class="card-title-icon">🎬</span>${s('chaptersTitle')}
+        <button class="btn-add" style="margin-left:auto;font-size:12px;padding:7px 14px" onclick="openModal('modal-chapter')">${s('addChapterBtn')}</button>
+      </div>
+      <div>${chaptersHtml}</div>
+    </div></div>`;
+
+  // Restore timer display with current state (timer keeps running from localStorage)
+  updateAllClocks();
+
+  if (pdfs.length) {
+    currentPdfUrl = pdfs[0].pdf_path;
+    setTimeout(() => {
+      const wrap = document.getElementById('pdf-canvas-wrap');
+      if (wrap) renderPdfInto(pdfs[0].pdf_path, wrap, inlineScale);
+    }, 50);
+  }
+}
+
+function renderLinks(links, modId, chId) {
+  if (!links.length) return `<li style="font-size:12px;color:var(--text-light);padding:4px 0">${s('noLinks')}</li>`;
+  return links.map(l=>`
+    <li class="link-item">
+      <a href="${l.url}" target="_blank" rel="noopener"><span style="font-size:15px">▶️</span>${l.title}</a>
+      <button class="link-del" onclick="deleteLink('${modId}','${chId}','${l.id}')">✕</button>
+    </li>`).join('');
+}
+
+function toggleChapter(id) {
+  document.getElementById(`body-${id}`).classList.toggle('open');
+  document.getElementById(`toggle-${id}`).classList.toggle('open');
+}
+
+// ── EXAMS / CHAPTERS ──────────────────────────────────────────────────────────
+async function submitExam() {
+  const name = document.getElementById('exam-name-input').value.trim();
+  if (!name) { toast(s('toastNameReq'),'error'); return; }
+  const score = document.getElementById('exam-score-input').value;
+  const pdf = document.getElementById('exam-pdf-input').files[0];
+  const fd = new FormData(); fd.append('name', name);
+  if (score) fd.append('score', score);
+  if (pdf) fd.append('pdf', pdf);
+  await fetch(`${API}/api/exams/${currentModule}`, {method:'POST',body:fd});
+  closeModal('modal-exam');
+  ['exam-name-input','exam-score-input','exam-pdf-input'].forEach(id=>document.getElementById(id).value='');
+  toast(s('toastExamAdded'),'success'); renderModule(currentModule);
+}
+async function saveScore(moduleId, examId, score) {
+  const fd = new FormData(); fd.append('score', score);
+  await fetch(`${API}/api/exams/${moduleId}/${examId}/score`, {method:'PUT',body:fd});
+  toast(s('toastScoreSaved'),'success');
+  const data = await fetch(`${API}/api/stats`).then(r=>r.json());
+  data.modules.forEach(m => { const el=document.getElementById(`nav-score-${m.id}`); if(el) el.textContent=m.average!==null?m.average.toFixed(1):'—'; });
+}
+async function deleteExam(moduleId, examId) {
+  await fetch(`${API}/api/exams/${moduleId}/${examId}`, {method:'DELETE'});
+  toast(s('toastExamDeleted')); renderModule(moduleId);
+}
+async function submitChapter() {
+  const title = document.getElementById('chapter-title-input').value.trim();
+  if (!title) { toast(s('toastTitleReq'),'error'); return; }
+  const fd = new FormData(); fd.append('title', title);
+  await fetch(`${API}/api/chapters/${currentModule}`, {method:'POST',body:fd});
+  closeModal('modal-chapter'); document.getElementById('chapter-title-input').value='';
+  toast(s('toastChAdded'),'success'); renderModule(currentModule);
+}
+async function deleteChapter(moduleId, chapterId) {
+  await fetch(`${API}/api/chapters/${moduleId}/${chapterId}`, {method:'DELETE'});
+  toast(s('toastChDeleted')); renderModule(moduleId);
+}
+async function addLink(moduleId, chapterId) {
+  const title=document.getElementById(`lt-${chapterId}`).value.trim();
+  const url=document.getElementById(`lu-${chapterId}`).value.trim();
+  if (!title||!url) { toast(s('toastLinkReq'),'error'); return; }
+  const fd=new FormData(); fd.append('title',title); fd.append('url',url);
+  await fetch(`${API}/api/chapters/${moduleId}/${chapterId}/links`, {method:'POST',body:fd});
+  toast(s('toastLinkAdded'),'success'); renderModule(moduleId);
+}
+async function deleteLink(moduleId, chapterId, linkId) {
+  await fetch(`${API}/api/chapters/${moduleId}/${chapterId}/links/${linkId}`, {method:'DELETE'});
+  toast(s('toastLinkDeleted')); renderModule(moduleId);
+}
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+
+init();
+</script>
+</body>
+</html>
