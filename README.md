@@ -16,7 +16,7 @@ A comprehensive study management application for BAC (Baccalauréat) students. O
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/BAC_ASSIST.git
+   git clone https://github.com/Karim-tchakal/BAC_ASSIST.git
    cd BAC_ASSIST
    ```
 
