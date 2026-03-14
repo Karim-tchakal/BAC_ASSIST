@@ -12,37 +12,38 @@ A comprehensive study management application for BAC (Baccalauréat) students. O
 - **Bilingual Support**: English and Arabic language support
 - **Desktop & Web**: Run as both a desktop application (via PyWebView) and web interface
 
-## Requirements
-
-- Python 3.8+
-- FastAPI
-- Uvicorn
-- PyWebView
-- python-multipart
-
 ## Installation
 
-1. Clone or download this project
-2. Create a virtual environment:
+1. Clone this repository:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
+   git clone https://github.com/YOUR_USERNAME/BAC_ASSIST.git
+   cd BAC_ASSIST
    ```
 
 ## Usage
 
-### Desktop Application (PyWebView)
+### Windows (Recommended)
+- Run the shortcut: `dist/run.exe`
+- The application will open in a desktop window
+
+### Development / Alternative Methods
+
+**Requirements:**
+- Python 3.8+
+
+**Setup:**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**Run:**
 ```bash
 python run.py
 ```
-This launches the application in a native desktop window.
 
-### Web Server Only
+Or start just the web server:
 ```bash
 python -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
@@ -54,6 +55,8 @@ Then visit `http://127.0.0.1:8000` in your browser.
 .
 ├── main.py              # FastAPI backend
 ├── run.py               # Desktop application launcher
+├── dist/
+│   └── run.exe          # Pre-built Windows executable ⭐
 ├── static/
 │   └── index.html       # Frontend UI
 ├── data/
