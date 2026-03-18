@@ -20,11 +20,11 @@ UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 DEFAULT_MODULES = [
-    {"id": "math",       "name_en": "Mathematics",          "name_ar": "الرياضيات",            "coefficient": 5, "color": "#FF6B35", "manual_override": None},
-    {"id": "physics",    "name_en": "Physics & Chemistry",  "name_ar": "الفيزياء والكيمياء",   "coefficient": 4, "color": "#F7931E", "manual_override": None},
-    {"id": "science",    "name_en": "Natural Sciences",     "name_ar": "علوم الطبيعة والحياة", "coefficient": 4, "color": "#FFB347", "manual_override": None},
+    {"id": "math",       "name_en": "Mathematics",          "name_ar": "الرياضيات",            "coefficient": 7, "color": "#FF6B35", "manual_override": None},
+    {"id": "physics",    "name_en": "Physics & Chemistry",  "name_ar": "الفيزياء والكيمياء",   "coefficient": 6, "color": "#F7931E", "manual_override": None},
     {"id": "arabic",     "name_en": "Arabic Language",      "name_ar": "اللغة العربية",         "coefficient": 3, "color": "#FF8C00", "manual_override": None},
-    {"id": "french",     "name_en": "French Language",      "name_ar": "اللغة الفرنسية",        "coefficient": 3, "color": "#FFA500", "manual_override": None},
+    {"id": "science",    "name_en": "Natural Sciences",     "name_ar": "علوم الطبيعة والحياة", "coefficient": 2, "color": "#FFB347", "manual_override": None},
+    {"id": "french",     "name_en": "French Language",      "name_ar": "اللغة الفرنسية",        "coefficient": 2, "color": "#FFA500", "manual_override": None},
     {"id": "english",    "name_en": "English Language",     "name_ar": "اللغة الإنجليزية",      "coefficient": 2, "color": "#FFD700", "manual_override": None},
     {"id": "history",    "name_en": "History & Geography",  "name_ar": "التاريخ والجغرافيا",    "coefficient": 2, "color": "#FF7043", "manual_override": None},
     {"id": "islamic",    "name_en": "Islamic Studies",      "name_ar": "التربية الإسلامية",     "coefficient": 2, "color": "#FF6B6B", "manual_override": None},
