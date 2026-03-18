@@ -224,7 +224,7 @@ html[dir="rtl"] .module-avg-display{margin-left:0;margin-right:auto;text-align:l
 .exam-item:hover{border-color:var(--gold)}
 .exam-item-clickable{cursor:pointer}
 .exam-item-clickable:hover{border-color:var(--orange);background:var(--orange-pale)}
-.exam-pdf-badge{font-size:11px;color:var(--orange);font-weight:600;background:var(--orange-pale);padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.exam-pdf-badge{font-size:16px;color:var(--orange);font-weight:600;background:var(--orange-pale);padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
 
 .exam-name{font-size:13px;font-weight:600;flex:1}
 .exam-pdf-link{font-size:11px;color:var(--orange);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px}
@@ -314,7 +314,7 @@ html[lang="ar"] .modal-title{font-family:'Noto Sans Arabic',serif}
       <div class="sidebar-timer-mini" id="sidebar-timer-mini">
         <div class="sidebar-timer-mini-clock" id="sidebar-timer-mini-clock">00:00:00</div>
         <div class="sidebar-timer-mini-btns">
-          <button class="stmb-reset" onclick="resetTimer()">reset</button>
+          <button class="stmb-reset" id="btn-sidebar-reset" onclick="resetTimer()">reset</button>
           <button class="stmb-play" id="sidebar-timer-play-btn" onclick="toggleTimer()">▶ Start</button>
         </div>
       </div>
@@ -344,7 +344,7 @@ html[lang="ar"] .modal-title{font-family:'Noto Sans Arabic',serif}
   <div class="pdf-modal-bar">
     <span class="pdf-modal-timer" id="pdf-modal-timer-display">00:00:00</span>
     <div class="pdf-modal-timer-controls">
-      <button class="pdf-modal-ctrl stop" onclick="resetTimer()" title="Reset timer">reset</button>
+      <button class="pdf-modal-ctrl stop" id="btn-modal-reset" onclick="resetTimer()" title="Reset timer">reset</button>
       <button class="pdf-modal-ctrl play" id="pdf-modal-play-btn" onclick="toggleTimer()">▶ Start</button>
     </div>
     <div class="pdf-modal-sep"></div>
@@ -521,6 +521,10 @@ function applyStaticLabels() {
   document.getElementById('chapter-title-input').placeholder = s('chTitlePh');
   document.getElementById('lbl-cancel-ch').textContent = s('cancel');
   document.getElementById('lbl-add-ch').textContent = s('add');
+  const sidebarReset = document.getElementById('btn-sidebar-reset');
+  if (sidebarReset) sidebarReset.textContent = s('reset');
+  const modalReset = document.getElementById('btn-modal-reset');
+  if (modalReset) modalReset.textContent = s('reset');
 }
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -648,7 +652,7 @@ function updateAllClocks() {
   const modalDisp = document.getElementById('pdf-modal-timer-display');
   if (modalDisp) { modalDisp.textContent = txt; modalDisp.className = timerClass('pdf-modal-timer'); }
   const modalPlay = document.getElementById('pdf-modal-play-btn');
-  if (modalPlay) modalPlay.textContent = TS.running ? '⏸ Pause' : (TS.remaining < TS.initial && TS.remaining > 0 ? '▶ Resume' : '▶ Start');
+  if (modalPlay) modalPlay.textContent = TS.running ? s('pause') : (TS.remaining < TS.initial && TS.remaining > 0 ? s('resume') : s('start'));
 }
 
 // ── CUSTOM TIMER ──────────────────────────────────────────────────────────────
