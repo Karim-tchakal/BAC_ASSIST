@@ -137,7 +137,7 @@ html[dir="rtl"] .module-avg-display{margin-left:0;margin-right:auto;text-align:l
 .timer-display.running{color:var(--orange)}
 .timer-display.warning{color:var(--danger);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-.timer-presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.timer-presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;align-items:center}
 .preset-btn{padding:6px 14px;border:2px solid var(--border);border-radius:20px;background:var(--cream);font-size:12px;font-weight:600;cursor:pointer;color:var(--text-mid);transition:all .15s;font-family:inherit}
 .preset-btn:hover,.preset-btn.active{background:var(--orange);color:#fff;border-color:var(--orange)}
 .timer-controls{display:flex;gap:10px;justify-content:center}
@@ -147,11 +147,25 @@ html[dir="rtl"] .module-avg-display{margin-left:0;margin-right:auto;text-align:l
 .timer-btn.reset{background:var(--cream);color:var(--text-mid);border:2px solid var(--border)}
 .timer-btn.reset:hover{border-color:var(--orange);color:var(--orange)}
 
+/* ── CUSTOM TIMER ── */
+.custom-timer-btn{width:32px;height:32px;border-radius:50%;border:2px dashed var(--border);background:var(--cream);color:var(--text-light);font-size:18px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;line-height:1}
+.custom-timer-btn:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-pale);border-style:solid}
+.custom-timer-popup{display:none;align-items:center;gap:8px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px 14px;box-shadow:0 4px 16px var(--shadow);flex-wrap:wrap;justify-content:center;margin-top:4px;width:100%}
+.custom-timer-popup.open{display:flex}
+.custom-timer-popup label{font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em}
+.custom-timer-input{width:56px;padding:5px 8px;border:2px solid var(--border);border-radius:7px;font-family:'Fraunces',serif;font-size:15px;font-weight:700;text-align:center;background:var(--cream);color:var(--text)}
+.custom-timer-input:focus{outline:none;border-color:var(--orange)}
+.custom-timer-sep{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:var(--text-light)}
+.custom-timer-set{padding:6px 16px;background:var(--orange);color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s}
+.custom-timer-set:hover{background:var(--orange-deep)}
+
 /* ── PDF VIEWER ── */
 .pdf-section-wrap{border:2px solid var(--border);border-radius:12px;overflow:hidden;background:var(--cream);margin-bottom:4px}
 .pdf-toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--paper);border-bottom:2px solid var(--border);flex-wrap:wrap}
 .pdf-fullscreen-btn{padding:5px 12px;border:2px solid var(--border);border-radius:8px;background:var(--card);color:var(--text-mid);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s;font-family:inherit;flex-shrink:0}
 .pdf-fullscreen-btn:hover{background:var(--orange-pale);color:var(--orange);border-color:var(--orange)}
+.pdf-open-browser-btn{padding:5px 10px;border:2px solid var(--border);border-radius:8px;background:var(--card);color:var(--text-mid);font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s;font-family:inherit;flex-shrink:0}
+.pdf-open-browser-btn:hover{background:#EEF6FF;color:#3B82F6;border-color:#3B82F6}
 .pdf-canvas-wrap{background:#f0f0f0;display:flex;flex-direction:column;align-items:center;padding:16px;gap:12px;min-height:420px;max-height:560px;overflow-y:auto}
 .pdf-page-canvas{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:100%;display:block}
 .pdf-placeholder{height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-light);gap:10px;background:var(--cream)}
@@ -191,6 +205,11 @@ html[dir="rtl"] .module-avg-display{margin-left:0;margin-right:auto;text-align:l
 .pdf-theme-btn:hover{background:var(--orange-pale);color:var(--orange);border-color:var(--orange)}
 .pdf-modal-overlay.dark-theme .pdf-theme-btn{background:#2a2a2a;color:#aaa;border-color:#444}
 .pdf-modal-overlay.dark-theme .pdf-theme-btn:hover{background:#3a3a3a;color:var(--orange);border-color:var(--orange)}
+/* Open in browser button inside modal */
+.pdf-modal-open-btn{height:34px;padding:0 12px;border-radius:8px;border:2px solid var(--border);background:var(--cream);color:var(--text-mid);cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s;flex-shrink:0;font-family:inherit;text-decoration:none}
+.pdf-modal-open-btn:hover{background:#EEF6FF;color:#3B82F6;border-color:#3B82F6}
+.pdf-modal-overlay.dark-theme .pdf-modal-open-btn{background:#2a2a2a;color:#aaa;border-color:#444}
+.pdf-modal-overlay.dark-theme .pdf-modal-open-btn:hover{background:#1e2a3a;color:#60A5FA;border-color:#3B82F6}
 .pdf-modal-spacer{flex:1}
 .pdf-modal-close{width:36px;height:36px;border-radius:8px;border:2px solid var(--border);background:var(--cream);color:var(--text-mid);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
 .pdf-modal-close:hover{background:#FFEAEA;color:var(--danger);border-color:var(--danger)}
@@ -203,6 +222,10 @@ html[dir="rtl"] .module-avg-display{margin-left:0;margin-right:auto;text-align:l
 .exam-list{display:flex;flex-direction:column;gap:10px}
 .exam-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:2px solid var(--border);border-radius:10px;background:var(--cream);transition:border-color .15s}
 .exam-item:hover{border-color:var(--gold)}
+.exam-item-clickable{cursor:pointer}
+.exam-item-clickable:hover{border-color:var(--orange);background:var(--orange-pale)}
+.exam-pdf-badge{font-size:11px;color:var(--orange);font-weight:600;background:var(--orange-pale);padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+
 .exam-name{font-size:13px;font-weight:600;flex:1}
 .exam-pdf-link{font-size:11px;color:var(--orange);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px}
 .exam-score-edit{width:55px;padding:4px 8px;border:2px solid var(--border);border-radius:6px;font-family:'DM Sans';font-size:13px;font-weight:600;text-align:center;background:#fff;color:var(--text)}
@@ -333,6 +356,7 @@ html[lang="ar"] .modal-title{font-family:'Noto Sans Arabic',serif}
     </div>
     <div class="pdf-modal-sep"></div>
     <button class="pdf-theme-btn" id="pdf-theme-btn" onclick="togglePdfTheme()">🌙 Dark</button>
+    <a class="pdf-modal-open-btn" id="pdf-modal-open-browser-btn" href="#" target="_blank" rel="noopener" title="Open in browser tab">🔗 Open in Browser</a>
     <div class="pdf-modal-spacer"></div>
     <button class="pdf-modal-close" onclick="closePdfModal()">✕</button>
   </div>
@@ -391,7 +415,7 @@ const STRINGS = {
     performanceTitle:'Performance by Subject', coeffTitle:'Coefficients & Scores',
     colSubject:'Subject', colCoeff:'Coefficient', colAvg:'Average', colExams:'Exams',
     coeff:'Coeff.', avgLabel:'Average /20',
-    timerTitle:'Exam Timer', hours:'hours',
+    timerTitle:'Exam Timer', hours:'h',
     examPapersTitle:'Exam Papers', chaptersTitle:'Chapters & Resources',
     addBtn:'+ Add', addChapterBtn:'+ Chapter',
     noPdf:'No PDF exam added', noExams:'No exams added', noChapters:'No chapters added', noLinks:'No resources yet',
@@ -411,6 +435,9 @@ const STRINGS = {
     timerDone:'⏰ Time is up!', start:'▶ Start', pause:'⏸ Pause', resume:'▶ Resume', reset:'Reset',
     statusMention:'🏅 With Honours', statusAdmis:'✅ Passed', statusRattrapage:'❌ Retake',
     videoTitle:'Video title', addLink:'+ Add', fullscreen:'⛶ Full Page',
+    customTimerSet:'Set', customTimerPlaceholder:'Custom time',
+    openInBrowser:'🔗 Open in Browser',
+    toastInvalidTime:'Enter a valid time (e.g. 1h 30m)',
   },
   ar: {
     sub:'منظّم الدراسة 2026', overview:'نظرة عامة', statsNav:'الإحصائيات', subjects:'المواد',
@@ -420,7 +447,7 @@ const STRINGS = {
     performanceTitle:'الأداء حسب المادة', coeffTitle:'المعاملات والدرجات',
     colSubject:'المادة', colCoeff:'المعامل', colAvg:'المعدل', colExams:'الامتحانات',
     coeff:'م.', avgLabel:'المعدل /20',
-    timerTitle:'مؤقت الامتحان', hours:'ساعة',
+    timerTitle:'مؤقت الامتحان', hours:'س',
     examPapersTitle:'أوراق الامتحانات', chaptersTitle:'الفصول والموارد',
     addBtn:'+ إضافة', addChapterBtn:'+ فصل',
     noPdf:'لم يتم إضافة ملف PDF بعد', noExams:'لا توجد امتحانات بعد', noChapters:'لا توجد فصول بعد', noLinks:'لا توجد موارد بعد',
@@ -440,6 +467,9 @@ const STRINGS = {
     timerDone:'⏰ انتهى الوقت!', start:'▶ ابدأ', pause:'⏸ إيقاف', resume:'▶ استئناف', reset:'إعادة',
     statusMention:'🏅 بامتياز', statusAdmis:'✅ ناجح', statusRattrapage:'❌ استدراكي',
     videoTitle:'عنوان الفيديو', addLink:'+ إضافة', fullscreen:'⛶ عرض كامل',
+    customTimerSet:'تعيين', customTimerPlaceholder:'وقت مخصص',
+    openInBrowser:'🔗 فتح في المتصفح',
+    toastInvalidTime:'أدخل وقتاً صحيحاً (مثال: 1 س 30 د)',
   }
 };
 
@@ -504,11 +534,7 @@ let currentModuleExams = [];
 // ══════════════════════════════════════════════════════════════════════════════
 // TIMER — persisted via localStorage, wall-clock based so it counts in background
 // ══════════════════════════════════════════════════════════════════════════════
-// Storage schema: { initial, remaining, running, startedAt }
-// When running: remaining = initial - (Date.now() - startedAt) / 1000
-
 const TIMER_KEY = 'bac_timer_v1';
-
 let timerInterval = null;
 
 function timerSave(state) {
@@ -520,20 +546,17 @@ function timerLoad() {
     const raw = localStorage.getItem(TIMER_KEY);
     if (!raw) return { initial: 0, remaining: 0, running: false, startedAt: null };
     const s = JSON.parse(raw);
-    // If was running, compute elapsed since startedAt
     if (s.running && s.startedAt) {
       const elapsed = (Date.now() - s.startedAt) / 1000;
       s.remaining = Math.max(0, s.remaining - elapsed);
-      s.startedAt = Date.now(); // reset so next load is accurate
+      s.startedAt = Date.now();
       if (s.remaining <= 0) { s.running = false; s.startedAt = null; }
     }
     return s;
   } catch { return { initial: 0, remaining: 0, running: false, startedAt: null }; }
 }
 
-// Single shared state object (always in sync with localStorage)
 let TS = timerLoad();
-// If it was running, resume the interval
 if (TS.running) _startInterval();
 
 function timerGet() { return TS; }
@@ -544,7 +567,6 @@ function _startInterval() {
     if (!TS.running) { clearInterval(timerInterval); return; }
     const elapsed = (Date.now() - TS.startedAt) / 1000;
     TS.remaining = Math.max(0, TS.initial - elapsed);
-    // Don't mutate startedAt here; keep original to stay wall-clock accurate
     if (TS.remaining <= 0) {
       TS.remaining = 0;
       TS.running = false;
@@ -554,7 +576,7 @@ function _startInterval() {
       toast(s('timerDone'));
     }
     updateAllClocks();
-  }, 500); // 500ms for responsiveness without flicker
+  }, 500);
 }
 
 function setTimer(str) {
@@ -563,19 +585,19 @@ function setTimer(str) {
   TS = { initial: (h * 60 + m) * 60, remaining: (h * 60 + m) * 60, running: false, startedAt: null };
   timerSave(TS);
   updateAllClocks();
-  // highlight preset
   document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === str));
+  // Close custom timer popup if open
+  const popup = document.getElementById('custom-timer-popup');
+  if (popup) popup.classList.remove('open');
 }
 
 function toggleTimer() {
   if (TS.remaining <= 0) return;
   if (TS.running) {
-    // pause
     TS.running = false;
     TS.startedAt = null;
     clearInterval(timerInterval);
   } else {
-    // start/resume — anchor startedAt so elapsed = initial - remaining
     TS.startedAt = Date.now() - (TS.initial - TS.remaining) * 1000;
     TS.running = true;
     _startInterval();
@@ -604,18 +626,15 @@ function timerClass(suffix) {
   return suffix;
 }
 
-// Update EVERY clock surface at once
 function updateAllClocks() {
   const txt = timerFmt(TS.remaining);
   const playLabel = TS.running ? s('pause') : (TS.remaining < TS.initial && TS.remaining > 0 ? s('resume') : s('start'));
 
-  // 1. Main page timer
   const mainDisp = document.getElementById('timer-display');
   if (mainDisp) { mainDisp.textContent = txt; mainDisp.className = timerClass('timer-display'); }
   const mainBtn = document.getElementById('timer-start-btn');
   if (mainBtn) mainBtn.textContent = playLabel;
 
-  // 2. Sidebar mini
   const mini = document.getElementById('sidebar-timer-mini');
   const miniClock = document.getElementById('sidebar-timer-mini-clock');
   const miniPlay = document.getElementById('sidebar-timer-play-btn');
@@ -626,11 +645,29 @@ function updateAllClocks() {
     if (miniPlay) miniPlay.textContent = TS.running ? s('pause') : (TS.remaining < TS.initial && TS.remaining > 0 ? s('resume') : s('start'));
   }
 
-  // 3. PDF modal timer
   const modalDisp = document.getElementById('pdf-modal-timer-display');
   if (modalDisp) { modalDisp.textContent = txt; modalDisp.className = timerClass('pdf-modal-timer'); }
   const modalPlay = document.getElementById('pdf-modal-play-btn');
   if (modalPlay) modalPlay.textContent = TS.running ? '⏸ Pause' : (TS.remaining < TS.initial && TS.remaining > 0 ? '▶ Resume' : '▶ Start');
+}
+
+// ── CUSTOM TIMER ──────────────────────────────────────────────────────────────
+function toggleCustomTimer() {
+  const popup = document.getElementById('custom-timer-popup');
+  if (popup) popup.classList.toggle('open');
+}
+
+function applyCustomTimer() {
+  const hInput = document.getElementById('custom-h');
+  const mInput = document.getElementById('custom-m');
+  const h = parseInt(hInput.value) || 0;
+  const m = parseInt(mInput.value) || 0;
+  if (h === 0 && m === 0) { toast(s('toastInvalidTime'), 'error'); return; }
+  if (h < 0 || m < 0 || m > 59 || h > 23) { toast(s('toastInvalidTime'), 'error'); return; }
+  const str = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  setTimer(str);
+  hInput.value = '';
+  mInput.value = '';
 }
 
 // ── FETCH / NAV ───────────────────────────────────────────────────────────────
@@ -638,7 +675,7 @@ async function init() {
   const modules = await fetchModules();
   buildSidebarNav(modules);
   renderStats();
-  updateAllClocks(); // show sidebar mini from restored state
+  updateAllClocks();
 }
 
 async function fetchModules() {
@@ -646,7 +683,9 @@ async function fetchModules() {
 }
 
 function buildSidebarNav(modules) {
-  document.getElementById('module-nav').innerHTML = modules.map(m => `
+  document.getElementById('module-nav').innerHTML = modules
+    .filter(m => m.id !== 'pe')
+    .map(m => `
     <div class="nav-item" data-page="module-${m.id}" onclick="navigate('module','${m.id}')" id="nav-${m.id}">
       <span class="nav-dot filled" style="border-color:${m.color};background:${m.color}"></span>
       <span style="flex:1;font-size:12.5px">${modName(m)}</span>
@@ -717,9 +756,17 @@ function inlineZoom(delta) {
   if (currentPdfUrl) { const w = document.getElementById('pdf-canvas-wrap'); if (w) renderPdfInto(currentPdfUrl, w, inlineScale); }
 }
 
-function openPdfModal(activeUrl) {
-  modalPdfUrl = activeUrl;
+// FIX 1: openPdfModal now uses currentPdfUrl (the currently displayed PDF) by default
+// but can still accept an explicit url override (e.g. when clicking from exam list)
+function openPdfModal(urlOverride) {
+  // Use the provided URL, or fall back to whatever is currently displayed inline
+  const targetUrl = urlOverride || currentPdfUrl;
+  if (!targetUrl) return;
+  modalPdfUrl = targetUrl;
   document.getElementById('pdf-modal').classList.add('open');
+  // FIX 3: Update the "Open in Browser" link href to the current PDF
+  const openBtn = document.getElementById('pdf-modal-open-browser-btn');
+  if (openBtn) openBtn.href = modalPdfUrl;
   updateAllClocks();
   updateModalZoomLabel();
   renderPdfInto(modalPdfUrl, document.getElementById('pdf-modal-body'), modalScale);
@@ -765,11 +812,13 @@ async function renderStats() {
     const el = document.getElementById(`nav-score-${m.id}`);
     if (el) el.textContent = m.average !== null ? m.average.toFixed(1) : '—';
   });
+
   const bs = data.bac_score;
   const status = bs === null ? '—' : bs >= 14 ? s('statusMention') : bs >= 10 ? s('statusAdmis') : s('statusRattrapage');
   const circles = data.modules.map(m => {
     const R=42, C=2*Math.PI*R, dash=(m.percentage/100)*C;
-    return `<div class="module-circle-card" onclick="navigate('module','${m.id}')">
+    const isPe = m.id === 'pe';
+    return `<div class="module-circle-card" ${isPe ? 'style="cursor:default;opacity:0.85"' : `onclick="navigate('module','${m.id}')"`}>
       <div class="circle-wrap">
         <svg class="circle-svg" width="100" height="100" viewBox="0 0 100 100">
           <circle class="circle-bg" cx="50" cy="50" r="${R}"/>
@@ -784,9 +833,10 @@ async function renderStats() {
   const rows = data.modules.map(m => {
     const sc=m.average, pc=sc===null?'none':sc>=14?'good':sc>=10?'mid':'bad';
     const isOverridden=m.is_overridden, autoVal=m.auto_average;
+    const isPe = m.id === 'pe';
     const badgeHtml = isOverridden ? `<span class="override-badge" title="${s('overrideTip')}">✏️ ${s('overrideLabel')}</span>` : '';
     const autoHint = isOverridden&&autoVal!==null ? `<span style="font-size:10px;color:var(--text-light);text-decoration:line-through">${autoVal.toFixed(2)}</span>` : '';
-    return `<tr>
+    return `<tr${isPe ? ' style="background:linear-gradient(90deg,rgba(76,175,125,0.06),transparent)"' : ''}>
       <td><div style="display:flex;align-items:center;gap:8px">
         <span style="width:10px;height:10px;border-radius:50%;background:${m.color};flex-shrink:0;display:inline-block"></span>
         <span>${modName(m)}</span>
@@ -800,10 +850,11 @@ async function renderStats() {
         <button class="btn-override-set" onclick="setOverride('${m.id}')">${s('setBtn')}</button>
         ${isOverridden?`<button class="btn-override-reset" onclick="resetOverride('${m.id}')">${s('resetBtn')}</button>`:''}
       </div></td>
-      <td style="color:var(--text-light);font-size:12px;white-space:nowrap">${STRINGS[lang].examsCount(m.scored_count,m.exam_count)}</td>
+      <td style="color:var(--text-light);font-size:12px;white-space:nowrap">${isPe ? '—' : STRINGS[lang].examsCount(m.scored_count,m.exam_count)}</td>
     </tr>`;
   }).join('');
   const best = (() => { const w=data.modules.filter(m=>m.average!==null); return w.length?modName(w.sort((a,b)=>b.average-a.average)[0]):'—'; })();
+
   document.getElementById('page-stats').innerHTML = `
     <div class="page-header">
       <div class="page-title">${s('statsTitle')}</div>
@@ -879,7 +930,8 @@ async function renderModule(moduleId) {
             <span class="pdf-inline-zoom-label" id="inline-zoom-label">100%</span>
             <button class="pdf-inline-zoom-btn" onclick="inlineZoom(0.2)">+</button>
           </div>
-          <button class="pdf-fullscreen-btn" style="margin-left:auto" onclick="openPdfModal('${firstUrl}')">${s('fullscreen')}</button>
+          <a id="inline-open-browser-btn" class="pdf-open-browser-btn" href="${firstUrl}" target="_blank" rel="noopener" title="Open PDF in browser tab" style="margin-left:auto">🔗 Browser</a>
+          <button class="pdf-fullscreen-btn" onclick="openPdfModal()">${s('fullscreen')}</button>
         </div>
         <div class="pdf-canvas-wrap" id="pdf-canvas-wrap"></div>
       </div>`;
@@ -888,15 +940,16 @@ async function renderModule(moduleId) {
   }
 
   const examsHtml = exams.length ? exams.map(e=>`
-    <div class="exam-item">
-      <span style="font-size:18px">📝</span>
+    <div class="exam-item ${e.pdf_path ? 'exam-item-clickable' : ''}" ${e.pdf_path ? `onclick="examItemClick(event,'${e.pdf_path}')"` : ''}>
+      <span style="font-size:18px;flex-shrink:0">📝</span>
       <span class="exam-name">${e.name}</span>
-      ${e.pdf_path?`<button class="exam-pdf-link" style="background:none;border:none;cursor:pointer;padding:0;font-family:inherit;font-size:11px;color:var(--orange);font-weight:500" onclick="switchInlinePdf('${e.pdf_path}');document.getElementById('pdf-canvas-wrap')?.scrollIntoView({behavior:'smooth',block:'start'})">📄 View</button>`:''}
+      ${e.pdf_path ? `<span class="exam-pdf-badge">📄 PDF</span>` : ''}
       <input class="exam-score-edit" type="number" min="0" max="20" step="0.5"
         value="${e.score??''}" placeholder="—"
+        onclick="event.stopPropagation()"
         onchange="saveScore('${moduleId}','${e.id}',this.value)"/>
-      <span style="font-size:10px;color:var(--text-light)">/20</span>
-      <button class="exam-del" onclick="deleteExam('${moduleId}','${e.id}')">✕</button>
+      <span style="font-size:10px;color:var(--text-light);flex-shrink:0">/20</span>
+      <button class="exam-del" onclick="event.stopPropagation();deleteExam('${moduleId}','${e.id}')" title="Delete exam">🗑</button>
     </div>`).join('')
     : `<div class="empty-state"><div class="empty-state-icon">📭</div><p>${s('noExams')}</p></div>`;
 
@@ -919,6 +972,7 @@ async function renderModule(moduleId) {
     </div>`).join('')
     : `<div class="empty-state"><div class="empty-state-icon">📚</div><p>${s('noChapters')}</p></div>`;
 
+  // FIX 2: custom timer "+" button and popup added after presets
   const presets = ['1:30','2:00','2:30','3:00','3:30','4:00','4:30'];
   const presetsHtml = presets.map(p=>`
     <button class="preset-btn" onclick="setTimer('${p}')" data-preset="${p}">${p} ${s('hours')}</button>`).join('');
@@ -937,7 +991,19 @@ async function renderModule(moduleId) {
     </div>
     <div class="card-stack"><div class="card">
       <div class="card-title"><span class="card-title-icon">⏱</span>${s('timerTitle')}</div>
-      <div class="timer-presets">${presetsHtml}</div>
+      <div class="timer-presets">
+        ${presetsHtml}
+        <button class="custom-timer-btn" onclick="toggleCustomTimer()" title="Set custom time">+</button>
+      </div>
+      <div class="custom-timer-popup" id="custom-timer-popup">
+        <label style="font-size:11px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em">Custom Time</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input class="custom-timer-input" id="custom-h" type="number" min="0" max="23" placeholder="h" title="Hours"/>
+          <span class="custom-timer-sep">:</span>
+          <input class="custom-timer-input" id="custom-m" type="number" min="0" max="59" placeholder="m" title="Minutes"/>
+        </div>
+        <button class="custom-timer-set" onclick="applyCustomTimer()">${s('customTimerSet')}</button>
+      </div>
       <div class="timer-display" id="timer-display">00:00:00</div>
       <div class="timer-controls">
         <button class="timer-btn reset" onclick="resetTimer()">${s('reset')}</button>
@@ -960,7 +1026,12 @@ async function renderModule(moduleId) {
       <div>${chaptersHtml}</div>
     </div></div>`;
 
-  // Restore timer display with current state (timer keeps running from localStorage)
+  // Allow Enter key in custom timer inputs
+  ['custom-h','custom-m'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') applyCustomTimer(); });
+  });
+
   updateAllClocks();
 
   if (pdfs.length) {
@@ -970,6 +1041,15 @@ async function renderModule(moduleId) {
       if (wrap) renderPdfInto(pdfs[0].pdf_path, wrap, inlineScale);
     }, 50);
   }
+}
+
+// Override switchInlinePdf to also keep the inline browser button href in sync
+function switchInlinePdf(url) {
+  currentPdfUrl = url;
+  const wrap = document.getElementById('pdf-canvas-wrap');
+  if (wrap) renderPdfInto(url, wrap, inlineScale);
+  const browserBtn = document.getElementById('inline-open-browser-btn');
+  if (browserBtn) browserBtn.href = url;
 }
 
 function renderLinks(links, modId, chId) {
@@ -1008,9 +1088,16 @@ async function saveScore(moduleId, examId, score) {
   data.modules.forEach(m => { const el=document.getElementById(`nav-score-${m.id}`); if(el) el.textContent=m.average!==null?m.average.toFixed(1):'—'; });
 }
 async function deleteExam(moduleId, examId) {
+  // Backend also deletes the PDF file from disk
   await fetch(`${API}/api/exams/${moduleId}/${examId}`, {method:'DELETE'});
   toast(s('toastExamDeleted')); renderModule(moduleId);
 }
+function examItemClick(event, pdfPath) {
+  if (event.target.closest('button,input,a')) return;
+  switchInlinePdf(pdfPath);
+  document.getElementById('pdf-canvas-wrap')?.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 async function submitChapter() {
   const title = document.getElementById('chapter-title-input').value.trim();
   if (!title) { toast(s('toastTitleReq'),'error'); return; }

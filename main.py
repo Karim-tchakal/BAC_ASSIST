@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from typing import List, Optional
 import json, os, shutil, uuid
 from pathlib import Path
@@ -30,33 +29,52 @@ DEFAULT_MODULES = [
     {"id": "history",    "name_en": "History & Geography",  "name_ar": "التاريخ والجغرافيا",    "coefficient": 2, "color": "#FF7043", "manual_override": None},
     {"id": "islamic",    "name_en": "Islamic Studies",      "name_ar": "التربية الإسلامية",     "coefficient": 2, "color": "#FF6B6B", "manual_override": None},
     {"id": "philosophy", "name_en": "Philosophy",           "name_ar": "الفلسفة",               "coefficient": 2, "color": "#FF4081", "manual_override": None},
+    {"id": "pe",         "name_en": "Physical Education",   "name_ar": "تربية بدنية",           "coefficient": 1, "color": "#4CAF7D", "manual_override": None},
 ]
 
 def load_data():
     if DATA_FILE.exists():
-        with open(DATA_FILE) as f:
-            data = json.load(f)
+        try:
+            with open(DATA_FILE, encoding="utf-8") as f:
+                data = json.load(f)
+        except (json.JSONDecodeError, ValueError):
+            data = {"modules": DEFAULT_MODULES, "exams": {}, "chapters": {}, "notes": {}}
+            save_data(data)
+            return data
+
+        existing_ids = {m["id"] for m in data.get("modules", [])}
         defaults_by_id = {m["id"]: m for m in DEFAULT_MODULES}
-        for m in data["modules"]:
-            d = defaults_by_id.get(m["id"], {})
+
+        for m in data.get("modules", []):
+            d = defaults_by_id.get(m.get("id"), {})
             if "name_en" not in m:
-                m["name_en"] = d.get("name_en", m.get("name", m["id"]))
+                m["name_en"] = d.get("name_en", m.get("name", m.get("id")))
             if "name_ar" not in m:
-                m["name_ar"] = d.get("name_ar", m.get("name", m["id"]))
+                m["name_ar"] = d.get("name_ar", m.get("name", m.get("id")))
             if "manual_override" not in m:
                 m["manual_override"] = None
+
+        for default_mod in DEFAULT_MODULES:
+            if default_mod["id"] not in existing_ids:
+                data["modules"].append({**default_mod})
+
         return data
-    return {
-        "modules": DEFAULT_MODULES,
-        "exams": {},
-        "chapters": {},
-        "notes": {}
-    }
+
+    return {"modules": DEFAULT_MODULES, "exams": {}, "chapters": {}, "notes": {}}
+
 
 def save_data(data):
     DATA_FILE.parent.mkdir(exist_ok=True)
-    with open(DATA_FILE, "w") as f:
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+def delete_file_if_exists(pdf_path: str):
+    """Delete an upload file given its URL path like /uploads/filename.pdf"""
+    if not pdf_path:
+        return
+    file_path = Path(pdf_path.lstrip("/"))
+    if file_path.exists():
+        file_path.unlink()
 
 # ── Modules ──────────────────────────────────────────────────────────────────
 
@@ -76,7 +94,6 @@ def update_coefficient(module_id: str, coefficient: float = Form(...)):
 
 @app.put("/api/modules/{module_id}/override")
 def set_override(module_id: str, score: float = Form(...)):
-    """Set a manual average override for a module (0–20)."""
     if not (0 <= score <= 20):
         raise HTTPException(400, "Score must be between 0 and 20")
     data = load_data()
@@ -89,7 +106,6 @@ def set_override(module_id: str, score: float = Form(...)):
 
 @app.delete("/api/modules/{module_id}/override")
 def reset_override(module_id: str):
-    """Remove the manual override — revert to auto-calculated average."""
     data = load_data()
     for m in data["modules"]:
         if m["id"] == module_id:
@@ -120,8 +136,16 @@ async def add_exam(
     pdf_path = None
 
     if pdf and pdf.filename:
-        ext = Path(pdf.filename).suffix
-        filename = f"{module_id}_{exam_id}{ext}"
+        ext = Path(pdf.filename).suffix or ".pdf"
+        # Readable filename: moduleId_examName.ext
+        safe_name = "".join(c if c.isalnum() or c in "-_" else "_" for c in name).strip("_")
+        base = f"{module_id}_{safe_name}"
+        filename = f"{base}{ext}"
+        # Append counter if file already exists: moduleId_examName_(2).pdf
+        counter = 2
+        while (UPLOAD_DIR / filename).exists():
+            filename = f"{base}_({counter}){ext}"
+            counter += 1
         dest = UPLOAD_DIR / filename
         with open(dest, "wb") as f:
             shutil.copyfileobj(pdf.file, f)
@@ -146,6 +170,11 @@ def update_score(module_id: str, exam_id: str, score: float = Form(...)):
 def delete_exam(module_id: str, exam_id: str):
     data = load_data()
     exams = data["exams"].get(module_id, [])
+    # Delete associated PDF file from disk
+    for e in exams:
+        if e["id"] == exam_id:
+            delete_file_if_exists(e.get("pdf_path", ""))
+            break
     data["exams"][module_id] = [e for e in exams if e["id"] != exam_id]
     save_data(data)
     return {"ok": True}
@@ -214,7 +243,6 @@ def get_stats():
         scored = [e["score"] for e in module_exams if e.get("score") is not None and e["score"] > 0]
         auto_avg = sum(scored) / len(scored) if scored else None
 
-        # Use manual override if set, otherwise fall back to auto
         override = m.get("manual_override")
         effective_avg = override if override is not None else auto_avg
         pct = (effective_avg / 20 * 100) if effective_avg is not None else 0
